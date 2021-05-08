@@ -84,8 +84,8 @@ public class GamePanel extends JPanel {
     private void gameInit() {
         spaceShips = new ArrayList<>();
 
-        for (int i = 0; i < 4; i++) {
-            for (int j = 0; j < 12; j++) {
+        for (int i = 0; i < Settings.NUMBER_OF_SPACESHIPS_ROWS; i++) {
+            for (int j = 0; j < Settings.NUMBER_OF_SPACESHIPS_COLUMNS; j++) {
                 var asteroid = new SpaceShip(Settings.SPACESHIP_INIT_X + 18 * j,
                         Settings.SPACESHIP_INIT_Y + 18 * i);
                 spaceShips.add(asteroid);
@@ -222,8 +222,7 @@ public class GamePanel extends JPanel {
 
         timePoints.stop();
 
-
-        if (points < record) {
+        if (points < record && message == Settings.WON) {
             try {
                 PrintWriter printWriter = new PrintWriter(recordFile);
                 printWriter.print(points);
@@ -235,7 +234,9 @@ public class GamePanel extends JPanel {
     }
 
     private void update() {
-         if (kills == Settings.NUMBER_OF_SPACESHIPS_TO_DESTROY) {
+        int spaceShipsCount = Settings.NUMBER_OF_SPACESHIPS_ROWS * Settings.NUMBER_OF_SPACESHIPS_COLUMNS;
+
+        if (kills == spaceShipsCount) {
             inGame = false;
             timer.stop();
             timePoints.stop();

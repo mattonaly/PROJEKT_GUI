@@ -13,7 +13,8 @@ public interface Settings {
 
     int MOVEMENT = 2;
     int GO_DOWN = 15;
-    int NUMBER_OF_SPACESHIPS_TO_DESTROY = 48;
+    int NUMBER_OF_SPACESHIPS_ROWS = 4;
+    int NUMBER_OF_SPACESHIPS_COLUMNS = 12;
     int CHANCE = 5;
     int CHANCE_OF = 15;
     int DELAY = 15;
