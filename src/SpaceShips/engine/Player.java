@@ -1,6 +1,6 @@
 package SpaceShips.engine;
 
-import SpaceShips.Constants;
+import SpaceShips.Settings;
 
 import javax.swing.*;
 import java.awt.event.KeyEvent;
@@ -13,16 +13,16 @@ public class Player extends Engine {
     }
 
     private void initPlayer() {
-        var playerImg = Constants.PLAYER_IMG;
+        var playerImg = Settings.PLAYER_IMG;
         ImageIcon icon = new ImageIcon(playerImg);
 
         width = icon.getImage().getWidth(null);
         setImage(icon.getImage());
 
-        int START_X = Constants.GAME_WIDTH / 2 - Constants.PLAYER_WIDTH;
+        int START_X = Settings.GAME_WIDTH / 2 - Settings.PLAYER_WIDTH;
         setX(START_X);
 
-        int START_Y = Constants.GROUND - 10;
+        int START_Y = Settings.GROUND - 10;
         setY(START_Y);
     }
 
@@ -33,8 +33,8 @@ public class Player extends Engine {
             x = 2;
         }
 
-        if (x >= Constants.GAME_WIDTH - 2 * width) {
-            x = Constants.GAME_WIDTH - 2 * width;
+        if (x >= Settings.GAME_WIDTH - 2 * width) {
+            x = Settings.GAME_WIDTH - 2 * width;
         }
     }
 
@@ -42,11 +42,11 @@ public class Player extends Engine {
         int key = e.getKeyCode();
 
         if (key == KeyEvent.VK_LEFT) {
-            moving = -Constants.MOVEMENT;
+            moving = -Settings.MOVEMENT;
         }
 
         if (key == KeyEvent.VK_RIGHT) {
-            moving = Constants.MOVEMENT;
+            moving = Settings.MOVEMENT;
         }
     }
 

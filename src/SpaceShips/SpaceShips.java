@@ -12,7 +12,7 @@ public class SpaceShips extends JFrame {
     private void initComponents() {
         add(new GamePanel());
         setTitle("Space ships game");
-        setSize(Constants.GAME_WIDTH, Constants.GAME_HEIGHT);
+        setSize(Settings.GAME_WIDTH, Settings.GAME_HEIGHT);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setResizable(false);

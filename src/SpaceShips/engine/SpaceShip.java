@@ -1,6 +1,6 @@
 package SpaceShips.engine;
 
-import SpaceShips.Constants;
+import SpaceShips.Settings;
 
 import javax.swing.ImageIcon;
 
@@ -17,7 +17,7 @@ public class SpaceShip extends Engine {
 
         bomb = new Bomb(x,y);
 
-        var asteroidImage = Constants.SPACESHIP_IMG;
+        var asteroidImage = Settings.SPACESHIP_IMG;
         ImageIcon icon = new ImageIcon(asteroidImage);
 
         setImage(icon.getImage());
@@ -44,7 +44,7 @@ public class SpaceShip extends Engine {
             this.x = x;
             this.y = y;
 
-            var bombImg = Constants.BOMB_IMG;
+            var bombImg = Settings.BOMB_IMG;
             ImageIcon icon = new ImageIcon(bombImg);
             setImage(icon.getImage());
         }

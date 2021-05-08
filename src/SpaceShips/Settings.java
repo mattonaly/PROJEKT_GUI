@@ -1,6 +1,6 @@
 package SpaceShips;
 
-public interface Constants {
+public interface Settings {
     int GAME_WIDTH = 360;
     int GAME_HEIGHT = 640;
     int BORDER_RIGHT = 30;
@@ -13,8 +13,9 @@ public interface Constants {
 
     int MOVEMENT = 2;
     int GO_DOWN = 15;
-    int NUMBER_OF_SPACESHIPS_TO_DESTROY = 24;
+    int NUMBER_OF_SPACESHIPS_TO_DESTROY = 48;
     int CHANCE = 5;
+    int CHANCE_OF = 15;
     int DELAY = 15;
     int STRIKE_DELAY = 200;
     int PLAYER_WIDTH = 15;

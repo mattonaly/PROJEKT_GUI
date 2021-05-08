@@ -1,6 +1,6 @@
 package SpaceShips.engine;
 
-import SpaceShips.Constants;
+import SpaceShips.Settings;
 
 import java.awt.*;
 
@@ -61,9 +61,9 @@ public class Engine {
     }
 
     public void revive() {
-        int START_X = Constants.GAME_WIDTH / 2 - Constants.PLAYER_WIDTH;
+        int START_X = Settings.GAME_WIDTH / 2 - Settings.PLAYER_WIDTH;
         setX(START_X);
-        int START_Y = Constants.GROUND - 10;
+        int START_Y = Settings.GROUND - 10;
         setY(START_Y);
         this.dying = false;
         this.visible = true;

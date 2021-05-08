@@ -1,6 +1,6 @@
 package SpaceShips.engine;
 
-import SpaceShips.Constants;
+import SpaceShips.Settings;
 
 import javax.swing.*;
 
@@ -13,7 +13,7 @@ public class Strike extends Engine {
     }
 
     private void initStrike(int x, int y) {
-        var shotImg = Constants.SHOT_IMG;
+        var shotImg = Settings.SHOT_IMG;
         ImageIcon icon = new ImageIcon(shotImg);
         setImage(icon.getImage());
 

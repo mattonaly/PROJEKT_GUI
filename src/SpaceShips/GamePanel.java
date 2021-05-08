@@ -4,7 +4,6 @@ import SpaceShips.engine.SpaceShip;
 import SpaceShips.engine.Player;
 import SpaceShips.engine.Strike;
 
-import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.Timer;
@@ -36,7 +35,7 @@ public class GamePanel extends JPanel {
 
     private boolean inGame = true;
     private boolean hasRecord = false;
-    private String message = Constants.LOST;
+    private String message = Settings.LOST;
 
     private Timer timer;
     private Timer timePoints;
@@ -70,10 +69,10 @@ public class GamePanel extends JPanel {
 
         addKeyListener(new KeyPressAdapter());
         setFocusable(true);
-        d = new Dimension(Constants.GAME_WIDTH, Constants.GAME_HEIGHT);
+        d = new Dimension(Settings.GAME_WIDTH, Settings.GAME_HEIGHT);
         setBackground(Color.black);
 
-        timer = (new Timer(Constants.DELAY, new UpdateGamePanel()));
+        timer = (new Timer(Settings.DELAY, new UpdateGamePanel()));
         timer.start();
 
         timePoints = new Timer(100, new GamePoints());
@@ -86,9 +85,9 @@ public class GamePanel extends JPanel {
         spaceShips = new ArrayList<>();
 
         for (int i = 0; i < 4; i++) {
-            for (int j = 0; j < 6; j++) {
-                var asteroid = new SpaceShip(Constants.SPACESHIP_INIT_X + 18 * j,
-                        Constants.SPACESHIP_INIT_Y + 18 * i);
+            for (int j = 0; j < 12; j++) {
+                var asteroid = new SpaceShip(Settings.SPACESHIP_INIT_X + 18 * j,
+                        Settings.SPACESHIP_INIT_Y + 18 * i);
                 spaceShips.add(asteroid);
             }
         }
@@ -121,7 +120,7 @@ public class GamePanel extends JPanel {
         if (player.isDying()) {
             player.die();
             if (lives > 0) {
-                String playerImg = Constants.PLAYER_IMG;
+                String playerImg = Settings.PLAYER_IMG;
                 ImageIcon icon = new ImageIcon(playerImg);
                 player.setImage(icon.getImage());
                 player.revive();
@@ -151,24 +150,24 @@ public class GamePanel extends JPanel {
     }
 
     private void drawHearts(Graphics g) {
-        var heartImg = Constants.EXPLOSION_IMG;
+        var heartImg = Settings.EXPLOSION_IMG;
         ImageIcon icon = new ImageIcon(heartImg);
         int x = 66;
         for (int i = 0; i < lives; i++) {
-            g.drawImage(icon.getImage(), Constants.GAME_WIDTH / 2 - x / 2, 15, this);
+            g.drawImage(icon.getImage(), Settings.GAME_WIDTH / 2 - x / 2, 15, this);
             x -= 22;
         }
     }
 
     private void drawPoints(Graphics g) {
         String text = "Points: " + points;
-        g.drawString(text, Constants.BORDER_LEFT, 20);
+        g.drawString(text, Settings.BORDER_LEFT, 20);
     }
 
     private void drawRecord(Graphics g) {
         String text = "Record: " + record;
         int width = g.getFontMetrics().stringWidth(text);
-        g.drawString(text, Constants.GAME_WIDTH - width - 20, 20);
+        g.drawString(text, Settings.GAME_WIDTH - width - 20, 20);
     }
 
     @Override
@@ -204,22 +203,22 @@ public class GamePanel extends JPanel {
 
     private void gameOver(Graphics g) {
         g.setColor(Color.black);
-        g.fillRect(0, 0, Constants.GAME_WIDTH, Constants.GAME_HEIGHT);
+        g.fillRect(0, 0, Settings.GAME_WIDTH, Settings.GAME_HEIGHT);
 
         g.setColor(new Color(0, 32, 48));
-        g.fillRect(50, Constants.GAME_WIDTH / 2 - 20, Constants.GAME_WIDTH - 100, 50);
+        g.fillRect(50, Settings.GAME_WIDTH / 2 - 20, Settings.GAME_WIDTH - 100, 50);
         g.setColor(Color.white);
-        g.drawRect(50, Constants.GAME_WIDTH / 2 - 20, Constants.GAME_WIDTH - 100, 50);
+        g.drawRect(50, Settings.GAME_WIDTH / 2 - 20, Settings.GAME_WIDTH - 100, 50);
 
         var small = new Font("Helvetica", Font.BOLD, 14);
         var fontMetrics = this.getFontMetrics(small);
 
         g.setColor(Color.white);
         g.setFont(small);
-        g.drawString(message, (Constants.GAME_WIDTH - fontMetrics.stringWidth(message)) / 2,
-                Constants.GAME_WIDTH / 2);
-        g.drawString(points + " points", (Constants.GAME_WIDTH - fontMetrics.stringWidth(points + " points")) / 2,
-                Constants.GAME_WIDTH / 2 + fontMetrics.getHeight() + 5);
+        g.drawString(message, (Settings.GAME_WIDTH - fontMetrics.stringWidth(message)) / 2,
+                Settings.GAME_WIDTH / 2);
+        g.drawString(points + " points", (Settings.GAME_WIDTH - fontMetrics.stringWidth(points + " points")) / 2,
+                Settings.GAME_WIDTH / 2 + fontMetrics.getHeight() + 5);
 
         timePoints.stop();
 
@@ -236,16 +235,16 @@ public class GamePanel extends JPanel {
     }
 
     private void update() {
-         if (kills == Constants.NUMBER_OF_SPACESHIPS_TO_DESTROY) {
+         if (kills == Settings.NUMBER_OF_SPACESHIPS_TO_DESTROY) {
             inGame = false;
             timer.stop();
             timePoints.stop();
-            message = Constants.WON;
+            message = Settings.WON;
         }
 
         player.movement();
 
-        String expImg = Constants.EXPLOSION_IMG;
+        String expImg = Settings.EXPLOSION_IMG;
         for (Strike strike : strikes) {
             if (strike.isVisible()) {
                 int shotX = strike.getX();
@@ -257,9 +256,9 @@ public class GamePanel extends JPanel {
 
                     if (spaceShip.isVisible() && strike.isVisible()) {
                         if (shotX >= (asteroidX)
-                                && shotX <= (asteroidX + Constants.SPACESHIP_WIDTH)
+                                && shotX <= (asteroidX + Settings.SPACESHIP_WIDTH)
                                 && shotY >= (asteroidY)
-                                && shotY <= (asteroidY + Constants.SPACESHIP_HEIGHT)) {
+                                && shotY <= (asteroidY + Settings.SPACESHIP_HEIGHT)) {
 
                             ImageIcon icon = new ImageIcon(expImg);
                             spaceShip.setImage(icon.getImage());
@@ -285,21 +284,21 @@ public class GamePanel extends JPanel {
             int x = spaceShip.getX();
             Iterator<SpaceShip> iterator = spaceShips.iterator();
 
-            if (x >= Constants.GAME_WIDTH - Constants.BORDER_RIGHT && direction != -1) {
+            if (x >= Settings.GAME_WIDTH - Settings.BORDER_RIGHT && direction != -1) {
                 direction = -1;
 
                 while (iterator.hasNext()) {
                     SpaceShip ss = iterator.next();
-                    ss.setY(ss.getY() + Constants.GO_DOWN);
+                    ss.setY(ss.getY() + Settings.GO_DOWN);
                 }
             }
 
-            if (x <= Constants.BORDER_LEFT && direction != 1) {
+            if (x <= Settings.BORDER_LEFT && direction != 1) {
                 direction = 1;
 
                 while (iterator.hasNext()) {
                     SpaceShip ss = iterator.next();
-                    ss.setY(ss.getY() + Constants.GO_DOWN);
+                    ss.setY(ss.getY() + Settings.GO_DOWN);
                 }
             }
         }
@@ -311,9 +310,9 @@ public class GamePanel extends JPanel {
             if (spaceShip.isVisible()) {
                 int y = spaceShip.getY();
 
-                if (y > Constants.GROUND - Constants.SPACESHIP_HEIGHT) {
+                if (y > Settings.GROUND - Settings.SPACESHIP_HEIGHT) {
                     inGame = false;
-                    message = Constants.LAND;
+                    message = Settings.LAND;
                 }
 
                 spaceShip.movement(direction);
@@ -323,10 +322,10 @@ public class GamePanel extends JPanel {
         var generator = new Random();
 
         for (SpaceShip spaceShip : spaceShips) {
-            int shot = generator.nextInt(50);
+            int shot = generator.nextInt(Settings.CHANCE_OF);
             SpaceShip.Bomb bomb = spaceShip.getBomb();
 
-            if (shot == Constants.CHANCE && spaceShip.isVisible() && bomb.isDestroyed()) {
+            if (shot == Settings.CHANCE && spaceShip.isVisible() && bomb.isDestroyed()) {
                 bomb.setDestroyed(false);
                 bomb.setX(spaceShip.getX());
                 bomb.setY(spaceShip.getY());
@@ -338,7 +337,7 @@ public class GamePanel extends JPanel {
             int playerY = player.getY();
 
             if (player.isVisible() && !bomb.isDestroyed()) {
-                if (bombX >= (playerX) && bombX <= (playerX + Constants.PLAYER_WIDTH) && bombY >= (playerY) && bombY <= (playerY + Constants.PLAYER_HEIGHT)) {
+                if (bombX >= (playerX) && bombX <= (playerX + Settings.PLAYER_WIDTH) && bombY >= (playerY) && bombY <= (playerY + Settings.PLAYER_HEIGHT)) {
                     ImageIcon icon = new ImageIcon(expImg);
                     player.setImage(icon.getImage());
                     player.setDying(true);
@@ -350,7 +349,7 @@ public class GamePanel extends JPanel {
             if (!bomb.isDestroyed()) {
                 bomb.setY(bomb.getY() + 1);
 
-                if (bomb.getY() >= Constants.GROUND - Constants.BOMB_HEIGHT) {
+                if (bomb.getY() >= Settings.GROUND - Settings.BOMB_HEIGHT) {
                     bomb.setDestroyed(true);
                 }
             }
@@ -392,7 +391,7 @@ public class GamePanel extends JPanel {
                 if (inGame && canFire) {
                     strikes.add(new Strike(player.getX(), player.getY()));
                     canFire = false;
-                    strikeDelay = new Timer(Constants.STRIKE_DELAY, event -> canFire = true);
+                    strikeDelay = new Timer(Settings.STRIKE_DELAY, event -> canFire = true);
                     strikeDelay.setRepeats(false);
                     strikeDelay.start();
                 }
