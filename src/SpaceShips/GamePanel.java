@@ -51,7 +51,7 @@ public class GamePanel extends JPanel {
             try {
                 recordFile.createNewFile();
             } catch (IOException e) {
-                e.getMessage();
+                e.printStackTrace();
             }
         } else {
             try {
@@ -63,7 +63,7 @@ public class GamePanel extends JPanel {
                     hasRecord = true;
                 }
             } catch (IOException e) {
-                e.getMessage();
+                e.printStackTrace();
             }
         }
 
@@ -96,8 +96,8 @@ public class GamePanel extends JPanel {
         strikes = new ArrayList<>();
     }
 
-    private void addPoints(int p) {
-        points += p;
+    private void addPoints() {
+        points += Settings.POINTS_PER_TICK;
     }
 
     private void drawAsteroids(Graphics g) {
@@ -229,7 +229,7 @@ public class GamePanel extends JPanel {
                 printWriter.print(points);
                 printWriter.close();
             } catch (FileNotFoundException e) {
-                e.getMessage();
+                e.printStackTrace();
             }
         }
     }
@@ -303,10 +303,7 @@ public class GamePanel extends JPanel {
             }
         }
 
-        Iterator<SpaceShip> it = spaceShips.iterator();
-
-        while (it.hasNext()) {
-            SpaceShip spaceShip = it.next();
+        for (SpaceShip spaceShip : spaceShips) {
             if (spaceShip.isVisible()) {
                 int y = spaceShip.getY();
 
@@ -360,7 +357,7 @@ public class GamePanel extends JPanel {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            addPoints(1);
+            addPoints();
         }
     }
 
@@ -374,7 +371,6 @@ public class GamePanel extends JPanel {
     }
 
     private class KeyPressAdapter extends KeyAdapter {
-        private Timer strikeDelay;
         boolean canFire = true;
 
         @Override
@@ -391,7 +387,7 @@ public class GamePanel extends JPanel {
                 if (inGame && canFire) {
                     strikes.add(new Strike(player.getX(), player.getY()));
                     canFire = false;
-                    strikeDelay = new Timer(Settings.STRIKE_DELAY, event -> canFire = true);
+                    Timer strikeDelay = new Timer(Settings.STRIKE_DELAY, event -> canFire = true);
                     strikeDelay.setRepeats(false);
                     strikeDelay.start();
                 }

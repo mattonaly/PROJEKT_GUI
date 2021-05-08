@@ -20,6 +20,7 @@ public interface Settings {
     int STRIKE_DELAY = 200;
     int PLAYER_WIDTH = 15;
     int PLAYER_HEIGHT = 10;
+    int POINTS_PER_TICK = 1;
 
     int GROUND = GAME_HEIGHT - 40;
 
