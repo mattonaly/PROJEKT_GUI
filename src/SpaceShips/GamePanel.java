@@ -33,8 +33,8 @@ public class GamePanel extends JPanel {
     private boolean hasRecord = false;
     private String message = Settings.START;
 
-    private Timer timer;
-    private Timer timePoints;
+    private final Timer timer = new Timer(Settings.DELAY, new UpdateGamePanel());
+    private final Timer timePoints = new Timer(100, event -> addPoints());
 
     File recordFile = new File("record.txt");
 
@@ -46,9 +46,6 @@ public class GamePanel extends JPanel {
         addKeyListener(new KeyPressAdapter());
         setFocusable(true);
         setBackground(Color.black);
-
-        timer = (new Timer(Settings.DELAY, new UpdateGamePanel()));
-        timePoints = new Timer(100, new GamePoints());
     }
 
     private void startGame() {
@@ -364,14 +361,6 @@ public class GamePanel extends JPanel {
                     bomb.setDestroyed(true);
                 }
             }
-        }
-    }
-
-    private class GamePoints implements ActionListener {
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            addPoints();
         }
     }
 
