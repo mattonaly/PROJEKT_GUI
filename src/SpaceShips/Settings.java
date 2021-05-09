@@ -9,7 +9,7 @@ public interface Settings {
     int SPACESHIP_HEIGHT = 12;
     int SPACESHIP_WIDTH = 12;
     int SPACESHIP_INIT_X = 150;
-    int SPACESHIP_INIT_Y = 5;
+    int SPACESHIP_INIT_Y = 35;
 
     int MOVEMENT = 2;
     int GO_DOWN = 15;
@@ -32,6 +32,7 @@ public interface Settings {
     String EXPLOSION_IMG = "src/SpaceShips/assets/explosion.png";
     String HEART_IMG = "src/SpaceShips/assets/heart.png";
 
+    String START = "Press enter to start the game!";
     String WON = "You won!";
     String LAND = "Space ships landed!";
     String LOST = "Game Over!";

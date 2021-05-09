@@ -4,11 +4,8 @@ import SpaceShips.engine.SpaceShip;
 import SpaceShips.engine.Player;
 import SpaceShips.engine.Strike;
 
-import javax.swing.ImageIcon;
-import javax.swing.JPanel;
-import javax.swing.Timer;
+import javax.swing.*;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
@@ -22,7 +19,6 @@ import java.util.List;
 import java.util.Random;
 
 public class GamePanel extends JPanel {
-    private Dimension d;
     private List<SpaceShip> spaceShips;
     private Player player;
     private List<Strike> strikes;
@@ -31,11 +27,11 @@ public class GamePanel extends JPanel {
     private int lives = 3;
     private int kills = 0;
     private int points = 0;
-    private int record = 0;
+    private int record = -1;
 
-    private boolean inGame = true;
+    private boolean inGame = false;
     private boolean hasRecord = false;
-    private String message = Settings.LOST;
+    private String message = Settings.START;
 
     private Timer timer;
     private Timer timePoints;
@@ -47,6 +43,22 @@ public class GamePanel extends JPanel {
     }
 
     private void initGamePanel() {
+        addKeyListener(new KeyPressAdapter());
+        setFocusable(true);
+        setBackground(Color.black);
+
+        timer = (new Timer(Settings.DELAY, new UpdateGamePanel()));
+        timePoints = new Timer(100, new GamePoints());
+    }
+
+    private void startGame() {
+        checkRecord();
+        gameInit();
+        timer.start();
+        timePoints.start();
+    }
+
+    private void checkRecord() {
         if (!recordFile.exists()) {
             try {
                 recordFile.createNewFile();
@@ -66,22 +78,14 @@ public class GamePanel extends JPanel {
                 e.printStackTrace();
             }
         }
-
-        addKeyListener(new KeyPressAdapter());
-        setFocusable(true);
-        d = new Dimension(Settings.GAME_WIDTH, Settings.GAME_HEIGHT);
-        setBackground(Color.black);
-
-        timer = (new Timer(Settings.DELAY, new UpdateGamePanel()));
-        timer.start();
-
-        timePoints = new Timer(100, new GamePoints());
-        timePoints.start();
-
-        gameInit();
     }
 
     private void gameInit() {
+        inGame = true;
+        lives = 3;
+        kills = 0;
+        points = 0;
+
         spaceShips = new ArrayList<>();
 
         for (int i = 0; i < Settings.NUMBER_OF_SPACESHIPS_ROWS; i++) {
@@ -127,6 +131,7 @@ public class GamePanel extends JPanel {
                 System.out.println(lives + " lives left");
             } else {
                 inGame = false;
+                message = Settings.LOST;
             }
         }
     }
@@ -179,7 +184,9 @@ public class GamePanel extends JPanel {
 
     private void draw(Graphics g) {
         g.setColor(Color.black);
-        g.fillRect(0, 0, d.width, d.height);
+        g.fillRect(0, 0, Settings.GAME_WIDTH, Settings.GAME_HEIGHT);
+        g.setColor(Color.white);
+        g.drawLine(0, 30, Settings.GAME_WIDTH, 30);
         g.setColor(Color.green);
 
         if (inGame) {
@@ -195,8 +202,9 @@ public class GamePanel extends JPanel {
             }
 
         } else {
-            if (timer.isRunning()) {
+            if (timer.isRunning() && timePoints.isRunning()) {
                 timer.stop();
+                timePoints.stop();
             }
             gameOver(g);
         }
@@ -216,14 +224,18 @@ public class GamePanel extends JPanel {
 
         g.setColor(Color.white);
         g.setFont(small);
-        g.drawString(message, (Settings.GAME_WIDTH - fontMetrics.stringWidth(message)) / 2,
-                Settings.GAME_WIDTH / 2);
-        g.drawString(points + " points", (Settings.GAME_WIDTH - fontMetrics.stringWidth(points + " points")) / 2,
-                Settings.GAME_WIDTH / 2 + fontMetrics.getHeight() + 5);
 
-        timePoints.stop();
+        if (points > 0) {
+            g.drawString(message, (Settings.GAME_WIDTH - fontMetrics.stringWidth(message)) / 2,
+                    Settings.GAME_WIDTH / 2);
+            g.drawString(points + " points", (Settings.GAME_WIDTH - fontMetrics.stringWidth(points + " points")) / 2,
+                    Settings.GAME_WIDTH / 2 + fontMetrics.getHeight() + 5);
+        } else {
+            g.drawString(message, (Settings.GAME_WIDTH - fontMetrics.stringWidth(message)) / 2,
+                    Settings.GAME_WIDTH / 2 + fontMetrics.getHeight() / 2);
+        }
 
-        if (points < record && message == Settings.WON) {
+        if ((points < record && message.equals(Settings.WON)) || record < 0 && message.equals(Settings.WON)) {
             try {
                 PrintWriter printWriter = new PrintWriter(recordFile);
                 printWriter.print(points);
@@ -377,13 +389,20 @@ public class GamePanel extends JPanel {
 
         @Override
         public void keyReleased(KeyEvent e) {
-            player.keyReleased(e);
+            if (inGame) {
+                player.keyReleased(e);
+            }
         }
 
         @Override
         public void keyPressed(KeyEvent e) {
-            player.keyPressed(e);
             int key = e.getKeyCode();
+
+            if (inGame) {
+                player.keyPressed(e);
+            } else if (key == KeyEvent.VK_ENTER) {
+                startGame();
+            }
 
             if (key == KeyEvent.VK_SPACE || key == KeyEvent.VK_UP) {
                 if (inGame && canFire) {
