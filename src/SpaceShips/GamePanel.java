@@ -150,12 +150,13 @@ public class GamePanel extends JPanel {
     }
 
     private void drawHearts(Graphics g) {
-        var heartImg = Settings.EXPLOSION_IMG;
+        var heartImg = Settings.HEART_IMG;
         ImageIcon icon = new ImageIcon(heartImg);
-        int x = 66;
+        int heartWidth = 20;
+        int x = heartWidth + heartWidth / 2;
         for (int i = 0; i < lives; i++) {
-            g.drawImage(icon.getImage(), Settings.GAME_WIDTH / 2 - x / 2, 15, this);
-            x -= 22;
+            g.drawImage(icon.getImage(), Settings.GAME_WIDTH / 2 - x, 8, this);
+            x -= heartWidth;
         }
     }
 
