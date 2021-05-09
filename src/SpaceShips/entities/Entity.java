@@ -1,18 +1,17 @@
-package SpaceShips.engine;
+package SpaceShips.entities;
 
 import SpaceShips.Settings;
 
 import java.awt.*;
 
-public class Engine {
-
+public class Entity {
     private boolean visible;
     private Image image;
     private boolean dying;
 
     int x, y, moving;
 
-    public Engine() {
+    public Entity() {
         visible = true;
     }
 
@@ -65,7 +64,7 @@ public class Engine {
         setX(START_X);
         int START_Y = Settings.GROUND - 10;
         setY(START_Y);
-        this.dying = false;
-        this.visible = true;
+        setDying(false);
+        setVisible(true);
     }
 }

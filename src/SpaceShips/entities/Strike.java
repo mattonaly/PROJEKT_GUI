@@ -1,10 +1,10 @@
-package SpaceShips.engine;
+package SpaceShips.entities;
 
 import SpaceShips.Settings;
 
 import javax.swing.*;
 
-public class Strike extends Engine {
+public class Strike extends Entity {
 
     public Strike() { }
 

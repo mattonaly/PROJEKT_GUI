@@ -1,11 +1,11 @@
-package SpaceShips.engine;
+package SpaceShips.entities;
 
 import SpaceShips.Settings;
 
 import javax.swing.*;
 import java.awt.event.KeyEvent;
 
-public class Player extends Engine {
+public class Player extends Entity {
     private int width;
 
     public Player() {

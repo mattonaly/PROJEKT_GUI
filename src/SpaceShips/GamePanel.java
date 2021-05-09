@@ -1,8 +1,8 @@
 package SpaceShips;
 
-import SpaceShips.engine.SpaceShip;
-import SpaceShips.engine.Player;
-import SpaceShips.engine.Strike;
+import SpaceShips.entities.SpaceShip;
+import SpaceShips.entities.Player;
+import SpaceShips.entities.Strike;
 
 import javax.swing.*;
 import java.awt.Color;

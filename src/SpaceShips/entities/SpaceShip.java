@@ -1,10 +1,10 @@
-package SpaceShips.engine;
+package SpaceShips.entities;
 
 import SpaceShips.Settings;
 
 import javax.swing.ImageIcon;
 
-public class SpaceShip extends Engine {
+public class SpaceShip extends Entity {
     private Bomb bomb;
 
     public SpaceShip(int x, int y) {
@@ -31,7 +31,7 @@ public class SpaceShip extends Engine {
         return bomb;
     }
 
-    public class Bomb extends Engine {
+    public class Bomb extends Entity {
         private boolean destroyed;
 
         public Bomb(int x, int y) {
