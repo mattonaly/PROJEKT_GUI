@@ -28,6 +28,7 @@ public class GamePanel extends JPanel {
     private int kills = 0;
     private int points = 0;
     private int record = -1;
+    private boolean power = false;
 
     private boolean inGame = false;
     private boolean hasRecord = false;
@@ -35,6 +36,10 @@ public class GamePanel extends JPanel {
 
     private final Timer timer = new Timer(Settings.DELAY, new UpdateGamePanel());
     private final Timer timePoints = new Timer(100, event -> addPoints());
+    private final Timer spawnEntity = new Timer(Settings.SPAWN_DELAY, event -> spawnEntity());
+
+    private final Timer invincibleBlink = new Timer(600, event -> player.setVisibility(false));
+    private final Timer invincibleBlinkBack = new Timer(600, event -> player.setVisibility(true));
 
     File recordFile = new File("record.txt");
 
@@ -53,6 +58,8 @@ public class GamePanel extends JPanel {
         gameInit();
         timer.start();
         timePoints.start();
+        spawnEntity.start();
+        invincibleBlinkBack.setInitialDelay(300);
     }
 
     private void checkRecord() {
@@ -101,7 +108,29 @@ public class GamePanel extends JPanel {
         points += Settings.POINTS_PER_TICK;
     }
 
-    private void drawAsteroids(Graphics g) {
+    private void invincibleBlink() {
+        if (player.isInvincible() && !invincibleBlink.isRunning() && !invincibleBlinkBack.isRunning()) {
+            invincibleBlink.start();
+            invincibleBlinkBack.start();
+        }
+
+        if (!player.isInvincible() && invincibleBlink.isRunning() && invincibleBlinkBack.isRunning()) {
+            invincibleBlink.stop();
+            invincibleBlinkBack.stop();
+            System.out.println("end blink");
+            player.setVisibility(true);
+        }
+    }
+
+    private void spawnEntity() {
+        var generator = new Random();
+        int posX = generator.nextInt(Settings.GAME_WIDTH / 2);
+        var spaceShip = new SpaceShip(posX + Settings.GAME_WIDTH / 4,
+                Settings.SPACESHIP_INIT_Y);
+        spaceShips.add(spaceShip);
+    }
+
+    private void drawSpaceShips(Graphics g) {
         for (SpaceShip spaceShip : spaceShips) {
             if (spaceShip.isVisible()) {
                 g.drawImage(spaceShip.getImage(), spaceShip.getX(), spaceShip.getY(), this);
@@ -114,17 +143,25 @@ public class GamePanel extends JPanel {
     }
 
     private void drawPlayer(Graphics g) {
+        invincibleBlink();
+
         if (player.isVisible()) {
             g.drawImage(player.getImage(), player.getX(), player.getY(), this);
         }
 
         if (player.isDying()) {
             player.die();
+
             if (lives > 0) {
                 String playerImg = Settings.PLAYER_IMG;
                 ImageIcon icon = new ImageIcon(playerImg);
                 player.setImage(icon.getImage());
                 player.revive();
+
+                Timer invincibleTimer = new Timer(Settings.DEATH_INVINCIBLE, event -> player.setInvincible(false));
+                invincibleTimer.setRepeats(false);
+                invincibleTimer.start();
+
                 System.out.println(lives + " lives left");
             } else {
                 inGame = false;
@@ -142,11 +179,16 @@ public class GamePanel extends JPanel {
     }
 
     private void drawBombing(Graphics g) {
-        for (SpaceShip a : spaceShips) {
-            SpaceShip.Bomb b = a.getBomb();
+        for (SpaceShip s : spaceShips) {
+            SpaceShip.Bomb b = s.getBomb();
+            SpaceShip.Power p = s.getPower();
 
             if (!b.isDestroyed()) {
                 g.drawImage(b.getImage(), b.getX(), b.getY(), this);
+            }
+
+            if (!p.isDestroyed()) {
+                g.drawImage(p.getImage(), p.getX(), p.getY(), this);
             }
         }
     }
@@ -187,7 +229,7 @@ public class GamePanel extends JPanel {
         g.setColor(Color.green);
 
         if (inGame) {
-            drawAsteroids(g);
+            drawSpaceShips(g);
             drawPlayer(g);
             drawStrike(g);
             drawBombing(g);
@@ -244,9 +286,16 @@ public class GamePanel extends JPanel {
     }
 
     private void update() {
-        int spaceShipsCount = Settings.NUMBER_OF_SPACESHIPS_ROWS * Settings.NUMBER_OF_SPACESHIPS_COLUMNS;
+        int spaceShipsCount = spaceShips.size();
+        int aliveSpaceShips = 0;
 
-        if (kills == spaceShipsCount) {
+        for (SpaceShip spaceShip : spaceShips) {
+            if (spaceShip.isVisible()) {
+                aliveSpaceShips++;
+            }
+        }
+
+        if (aliveSpaceShips + spaceShipsCount == spaceShipsCount) {
             inGame = false;
             timer.stop();
             timePoints.stop();
@@ -262,14 +311,14 @@ public class GamePanel extends JPanel {
                 int shotY = strike.getY();
 
                 for (SpaceShip spaceShip : spaceShips) {
-                    int asteroidX = spaceShip.getX();
-                    int asteroidY = spaceShip.getY();
+                    int spaceShipX = spaceShip.getX();
+                    int spaceShipY = spaceShip.getY();
 
                     if (spaceShip.isVisible() && strike.isVisible()) {
-                        if (shotX >= (asteroidX)
-                                && shotX <= (asteroidX + Settings.SPACESHIP_WIDTH)
-                                && shotY >= (asteroidY)
-                                && shotY <= (asteroidY + Settings.SPACESHIP_HEIGHT)) {
+                        if (shotX >= (spaceShipX)
+                                && shotX <= (spaceShipX + Settings.SPACESHIP_WIDTH)
+                                && shotY >= (spaceShipY)
+                                && shotY <= (spaceShipY + Settings.SPACESHIP_HEIGHT)) {
 
                             ImageIcon icon = new ImageIcon(expImg);
                             spaceShip.setImage(icon.getImage());
@@ -331,7 +380,9 @@ public class GamePanel extends JPanel {
 
         for (SpaceShip spaceShip : spaceShips) {
             int shot = generator.nextInt(Settings.CHANCE_OF);
+            int powerChance = generator.nextInt(Settings.POWER_CHANCE_OF);
             SpaceShip.Bomb bomb = spaceShip.getBomb();
+            SpaceShip.Power power = spaceShip.getPower();
 
             if (shot == Settings.CHANCE && spaceShip.isVisible() && bomb.isDestroyed()) {
                 bomb.setDestroyed(false);
@@ -339,18 +390,39 @@ public class GamePanel extends JPanel {
                 bomb.setY(spaceShip.getY());
             }
 
+            if (powerChance == Settings.CHANCE && spaceShip.isVisible() && power.isDestroyed()) {
+                power.setDestroyed(false);
+                power.setX(spaceShip.getX());
+                power.setY(spaceShip.getY());
+            }
+
             int bombX = bomb.getX();
             int bombY = bomb.getY();
+            int powerX = power.getX();
+            int powerY = power.getY();
             int playerX = player.getX();
             int playerY = player.getY();
 
             if (player.isVisible() && !bomb.isDestroyed()) {
                 if (bombX >= (playerX) && bombX <= (playerX + Settings.PLAYER_WIDTH) && bombY >= (playerY) && bombY <= (playerY + Settings.PLAYER_HEIGHT)) {
-                    ImageIcon icon = new ImageIcon(expImg);
-                    player.setImage(icon.getImage());
-                    player.setDying(true);
-                    lives--;
-                    bomb.setDestroyed(true);
+                    if (!player.isInvincible()) {
+                        ImageIcon icon = new ImageIcon(expImg);
+                        player.setImage(icon.getImage());
+                        player.setDying(true);
+                        lives--;
+
+                        bomb.setDestroyed(true);
+                    }
+                }
+            }
+
+            if (player.isVisible() && !power.isDestroyed()) {
+                if (powerX >= (playerX) && powerX <= (playerX + Settings.PLAYER_WIDTH) && powerY >= (playerY) && powerY <= (playerY + Settings.PLAYER_HEIGHT)) {
+                    power.setDestroyed(true);
+                    this.power = true;
+                    Timer powerTime = new Timer(Settings.POWER_TIME, event -> this.power = false);
+                    powerTime.setRepeats(false);
+                    powerTime.start();
                 }
             }
 
@@ -359,6 +431,14 @@ public class GamePanel extends JPanel {
 
                 if (bomb.getY() >= Settings.GROUND - Settings.BOMB_HEIGHT) {
                     bomb.setDestroyed(true);
+                }
+            }
+
+            if (!power.isDestroyed()) {
+                power.setY(power.getY() + 2);
+
+                if (power.getY() >= Settings.GROUND - Settings.BOMB_HEIGHT) {
+                    power.setDestroyed(true);
                 }
             }
         }
@@ -389,6 +469,12 @@ public class GamePanel extends JPanel {
 
             if (inGame) {
                 player.keyPressed(e);
+
+                if (key == KeyEvent.VK_DOWN) {
+                    var spaceShip = new SpaceShip(Settings.SPACESHIP_INIT_X,
+                            Settings.SPACESHIP_INIT_Y);
+                    spaceShips.add(spaceShip);
+                }
             } else if (key == KeyEvent.VK_ENTER) {
                 startGame();
             }
@@ -396,10 +482,12 @@ public class GamePanel extends JPanel {
             if (key == KeyEvent.VK_SPACE || key == KeyEvent.VK_UP) {
                 if (inGame && canFire) {
                     strikes.add(new Strike(player.getX(), player.getY()));
-                    canFire = false;
-                    Timer strikeDelay = new Timer(Settings.STRIKE_DELAY, event -> canFire = true);
-                    strikeDelay.setRepeats(false);
-                    strikeDelay.start();
+                    if (!power) {
+                        canFire = false;
+                        Timer strikeDelay = new Timer(Settings.STRIKE_DELAY, event -> canFire = true);
+                        strikeDelay.setRepeats(false);
+                        strikeDelay.start();
+                    }
                 }
             }
 

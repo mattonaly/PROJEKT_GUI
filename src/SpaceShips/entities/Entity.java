@@ -1,7 +1,5 @@
 package SpaceShips.entities;
 
-import SpaceShips.Settings;
-
 import java.awt.*;
 
 public class Entity {
@@ -57,14 +55,5 @@ public class Entity {
 
     public boolean isDying() {
         return this.dying;
-    }
-
-    public void revive() {
-        int START_X = Settings.GAME_WIDTH / 2 - Settings.PLAYER_WIDTH;
-        setX(START_X);
-        int START_Y = Settings.GROUND - 10;
-        setY(START_Y);
-        setDying(false);
-        setVisible(true);
     }
 }

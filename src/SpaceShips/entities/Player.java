@@ -7,6 +7,7 @@ import java.awt.event.KeyEvent;
 
 public class Player extends Entity {
     private int width;
+    private boolean invincible = false;
 
     public Player() {
         initPlayer();
@@ -24,6 +25,28 @@ public class Player extends Entity {
 
         int START_Y = Settings.GROUND - 10;
         setY(START_Y);
+    }
+
+    public void setVisibility(boolean visibility) {
+        super.setVisible(visibility);
+    }
+
+    public void setInvincible(boolean invincible) {
+        this.invincible = invincible;
+    }
+
+    public boolean isInvincible() {
+        return this.invincible;
+    }
+
+    public void revive() {
+        int START_X = Settings.GAME_WIDTH / 2 - Settings.PLAYER_WIDTH;
+        setX(START_X);
+        int START_Y = Settings.GROUND - 10;
+        setY(START_Y);
+        this.invincible = true;
+        super.setDying(false);
+        super.setVisible(true);
     }
 
     public void movement() {
