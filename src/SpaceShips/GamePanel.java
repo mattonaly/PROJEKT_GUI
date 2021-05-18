@@ -25,7 +25,6 @@ public class GamePanel extends JPanel {
 
     private int direction = -1;
     private int lives = 3;
-    private int kills = 0;
     private int points = 0;
     private int record = -1;
     private boolean power = false;
@@ -87,7 +86,6 @@ public class GamePanel extends JPanel {
     private void gameInit() {
         inGame = true;
         lives = 3;
-        kills = 0;
         points = 0;
 
         spaceShips = new ArrayList<>();
@@ -117,7 +115,6 @@ public class GamePanel extends JPanel {
         if (!player.isInvincible() && invincibleBlink.isRunning() && invincibleBlinkBack.isRunning()) {
             invincibleBlink.stop();
             invincibleBlinkBack.stop();
-            System.out.println("end blink");
             player.setVisibility(true);
         }
     }
@@ -286,7 +283,6 @@ public class GamePanel extends JPanel {
     }
 
     private void update() {
-        int spaceShipsCount = spaceShips.size();
         int aliveSpaceShips = 0;
 
         for (SpaceShip spaceShip : spaceShips) {
@@ -295,7 +291,7 @@ public class GamePanel extends JPanel {
             }
         }
 
-        if (aliveSpaceShips + spaceShipsCount == spaceShipsCount) {
+        if (aliveSpaceShips == 0) {
             inGame = false;
             timer.stop();
             timePoints.stop();
@@ -323,7 +319,6 @@ public class GamePanel extends JPanel {
                             ImageIcon icon = new ImageIcon(expImg);
                             spaceShip.setImage(icon.getImage());
                             spaceShip.setDying(true);
-                            kills++;
                             strike.die();
                         }
                     }
