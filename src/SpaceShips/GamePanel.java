@@ -112,7 +112,7 @@ public class GamePanel extends JPanel {
             invincibleBlinkBack.start();
         }
 
-        if (!player.isInvincible() && invincibleBlink.isRunning() && invincibleBlinkBack.isRunning()) {
+        if (!player.isInvincible() && !player.isVisible() && invincibleBlink.isRunning() && invincibleBlinkBack.isRunning()) {
             invincibleBlink.stop();
             invincibleBlinkBack.stop();
             player.setVisibility(true);
@@ -194,7 +194,7 @@ public class GamePanel extends JPanel {
         var heartImg = Settings.HEART_IMG;
         ImageIcon icon = new ImageIcon(heartImg);
         int heartWidth = 20;
-        int x = heartWidth + heartWidth / 2;
+        int x = heartWidth + heartWidth;
         for (int i = 0; i < lives; i++) {
             g.drawImage(icon.getImage(), Settings.GAME_WIDTH / 2 - x, 8, this);
             x -= heartWidth;
